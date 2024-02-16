@@ -1,0 +1,43 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float rand(float x){
+    return fract(sin(x)*12000.);
+}
+
+float noise(float x){
+    float i = floor(x);
+    float f = fract(x);
+    return mix(rand(i), rand(i+1.), smoothstep(0.,1.,f));
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+
+    vec3 color = vec3(0.);
+    
+    
+    st -= 0.5;
+    vec2 center = vec2(0.);
+    float teta = atan(st.y - center.y, st.x - center.x) * 4.;
+    
+    
+
+    
+    
+    float dMax = mix(0.2, 0.5, noise(noise(teta ) + u_time * 0.5));
+    
+
+    float d = 1.-step(dMax, length(st));
+    color = vec3(d) * vec3(noise(u_time*0.1), noise(u_time*0.07), noise(u_time*0.03)) * (1.-length(st));
+
+    gl_FragColor = vec4(color,1.0);
+}

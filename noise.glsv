@@ -1,0 +1,63 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define ROWS_NUMBER 5
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+
+float rand(float x){
+    return fract(sin(x)*12000.);
+}
+
+float rand2(vec2 uv) {
+    return fract(sin(dot(uv.xy,
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
+}
+
+void rotate(inout vec2 uv, vec2 center, float angle){
+    uv -= center;
+    mat2 m = mat2(sin(angle), -cos(angle), cos(angle), sin(angle));
+    uv *= m;
+    uv += center;
+}
+
+float noise(float x){
+    float i = floor(x);
+    float f = fract(x);
+    return mix(rand(i), rand(i+1.), smoothstep(0.,1.,f));
+}
+
+float noise2(vec2 uv){
+    return noise(rand2(uv));
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+    vec2 stmem = st;
+    
+    
+    // Movements
+    float movement_speed = 1.;
+    vec2 movements = vec2(noise(u_time * movement_speed)-0.5, 
+                          noise((u_time + 5.) * movement_speed)-0.5);
+	st += movements;
+    
+    // Rotations
+    float teta = noise(u_time) * 6.28;
+    rotate(st, vec2(0.5), teta);
+    vec2 borders = step(vec2(0.5 - noise(u_time)*0.3), st) * step(vec2(0.4), 1.-st);
+    rotate(st, vec2(0.5), -teta);
+    
+        
+    float pct = borders.x * borders.y;
+	vec3 color = pct * vec3(noise(u_time * dot(st,vec2(cos(teta),sin(teta)))))
+        * vec3(stmem.x, stmem.y, 0.7);
+    
+    gl_FragColor = vec4(color,1.0);
+}

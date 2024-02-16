@@ -1,0 +1,44 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+
+float random1 (float i){
+    return fract(sin(i)*10000.);
+}
+
+float random (vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+    
+    int num_of_rows = 2;
+
+    st.y *= float(num_of_rows);
+    float fypos = fract(st.y);
+    float iypos = floor(st.y);
+    
+    // Between -1 and 1
+    float sens_i_y_pos = floor(mod(iypos,2.)) * 2. - 1.;
+    
+    float r = random1(floor(st.x * 50. + sens_i_y_pos * u_time * 5.));
+    r = pow(r,3.);
+    
+    
+    float intensity = (sin(u_time) +1.) * 0.5;
+    intensity = intensity * 0.2+0.3;
+    
+    float c = step(r, intensity);    
+    vec3 color = vec3(c);
+
+    gl_FragColor = vec4(color,1.0);
+}

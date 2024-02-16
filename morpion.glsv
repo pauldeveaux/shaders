@@ -1,0 +1,51 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+# define PI 3.14
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+float circle(in vec2 _st, in float _radius){
+    vec2 l = _st-vec2(0.5);
+    return 1.-smoothstep(_radius-(_radius*0.01),
+                         _radius+(_radius*0.01),
+                         dot(l,l)*4.0);
+}
+
+void writeIn(inout vec3 color, in vec2 coords, vec2 wantedCoords, vec3 wantedColor){
+    if(coords == wantedCoords)
+        color += wantedColor;
+}
+
+float cross(in vec2 uv, in float size, in float stroke){
+    uv -= vec2(0.5);
+    uv = mat2(cos(PI/4.), -sin(PI/4.), sin(PI/4.), cos(PI/4.) ) * uv;
+    float ret = (step(abs(uv.y), stroke) + step(abs(uv.x), stroke)) * (step(abs(uv.y),size) * step(abs(uv.x),size));
+    
+    return ret;
+}
+
+vec2 motif(inout vec2 uv, vec2 motifSize){
+    uv *= motifSize;
+    vec2 coords = floor(uv);
+    uv = fract(uv); 
+    return coords;
+}
+
+void main() {
+	vec2 st = gl_FragCoord.xy/u_resolution;
+    vec3 color = vec3(0.0);
+
+    vec2 coords = motif(st, vec2(3.,3.));
+    
+    
+    writeIn(color, coords, vec2(0.,0.), vec3(circle(st,0.5)) - vec3(circle(st, 0.3)));
+    
+    writeIn(color, coords, vec2(0.,0.), vec3(cross(st, 0.3, 0.1)));
+    
+   	color = max(color, vec3(st,0.0));
+
+	gl_FragColor = vec4(color,1.0);
+}

@@ -1,0 +1,41 @@
+// Author:
+// Title:
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define ROWS_NUMBER 5
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+
+float rand1(float i){
+    return fract(sin(i*12000.));
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+    
+   	
+    st.x *= 20.;
+    st.y *= float(ROWS_NUMBER);
+    
+    
+    vec2 f_pos = fract(st);
+    vec2 i_pos = floor(st);
+    
+    
+    float speed = u_time*rand1(i_pos.y);
+    
+    float rnd = rand1(f_pos.x + i_pos.y*rand1(i_pos.y));
+    rnd = pow(rnd,4.);
+    float c = step(0.5,rnd);
+    
+    
+    
+    gl_FragColor = vec4(vec3(c),1.0);
+}
