@@ -4,7 +4,7 @@ Welcome to my personal shader projects repository! Here, I showcase various shad
 
 ## Running the Shaders
 
-To view and interact with the shaders, visit [The Book of Shaders](http://editor.thebookofshaders.com/) website. Copy the shader code from the respective project file in this repository and paste it into the editor to see real-time rendering.
+To view and interact with the shaders, visit [Editor - The Book of Shaders](http://editor.thebookofshaders.com/) website. Copy the shader code from the respective project file in this repository and paste it into the editor to see real-time rendering.
 
 ## Usage
 
